@@ -78,10 +78,10 @@ CREATE TABLE IF NOT EXISTS public.tg_accounts
     CONSTRAINT tg_accounts_pkey PRIMARY KEY (id)
 );
 
-INSERT INTO public.tg_accounts (id, api_id, api_hash, phone, session_name, password, is_initialized, date_start_used, date_end_used) OVERRIDING SYSTEM VALUE VALUES (1, '29289201', 'ee09bf6b5446f525c9f44a077d2c0736', '+447950524824', '447950524824', '1010', true, '2024-04-05 05:25:20.628342', '2024-04-02 05:25:48.778391');
-INSERT INTO public.tg_accounts (id, api_id, api_hash, phone, session_name, password, is_initialized, date_start_used, date_end_used) OVERRIDING SYSTEM VALUE VALUES (2, '26399668', '754f4b4d08a6f13de3782f15256549d4', '+447300525468', '447300525468', '0101', true, '2024-04-05 05:25:20.628399', '2024-04-02 05:25:48.778432');
-INSERT INTO public.tg_accounts (id, api_id, api_hash, phone, session_name, password, is_initialized, date_start_used, date_end_used) OVERRIDING SYSTEM VALUE VALUES (3, '23615488', '740ca2499b25dd18027d522bf01e5025', '+447379048111', '447379048111', '3401', true, '2024-04-05 05:25:20.628417', '2024-04-02 05:25:48.778447');
-INSERT INTO public.tg_accounts (id, api_id, api_hash, phone, session_name, password, is_initialized, date_start_used, date_end_used) OVERRIDING SYSTEM VALUE VALUES (4, '29483724', '7c5bda57f23fac8ad9c88ac9f6642858', '+447404485124', '447404485124', '6754', true, '2024-04-05 05:25:20.628427', '2024-04-02 05:25:48.778457');
+
+INSERT INTO public.tg_accounts (id, api_id, api_hash, phone, session_name, password, is_initialized, date_start_used, date_end_used) OVERRIDING SYSTEM VALUE VALUES (1, '26399668', '754f4b4d08a6f13de3782f15256549d4', '+447300525468', '447300525468', '0101', true, '2024-04-05 05:25:20.628399', '2024-04-02 05:25:48.778432');
+INSERT INTO public.tg_accounts (id, api_id, api_hash, phone, session_name, password, is_initialized, date_start_used, date_end_used) OVERRIDING SYSTEM VALUE VALUES (2, '23615488', '740ca2499b25dd18027d522bf01e5025', '+447379048111', '447379048111', '3401', true, '2024-04-05 05:25:20.628417', '2024-04-02 05:25:48.778447');
+INSERT INTO public.tg_accounts (id, api_id, api_hash, phone, session_name, password, is_initialized, date_start_used, date_end_used) OVERRIDING SYSTEM VALUE VALUES (3, '29483724', '7c5bda57f23fac8ad9c88ac9f6642858', '+447404485124', '447404485124', '6754', true, '2024-04-05 05:25:20.628427', '2024-04-02 05:25:48.778457');
 
 INSERT INTO public.potential_telegram_sources (id, parent_id, link, is_processing, date_create_row, date_formation_edge) VALUES (1195, 1, 'https://t.me/TGDAOgroup', false, '2024-04-04 00:00:00', '2024-04-04 00:00:00');
 INSERT INTO public.potential_telegram_sources (id, parent_id, link, is_processing, date_create_row, date_formation_edge) VALUES (1328, 1, 'https://t.me/scarybunnyBSC', false, '2024-04-04 00:00:00', '2024-04-04 00:00:00');
