@@ -7,7 +7,7 @@ DATABASE:
   db_password: 'vim'
   db_name: 'telegram'
 SETTINGS:
-  threads: 4
+  threads: 3
   tg_limit: 2
   messages_limit: 200000
   messages_date_start: '2024-03-01'
