@@ -202,29 +202,32 @@ async def processing_telegram_source(link, parent_id, date_formation_edge, db_se
 
 
 async def thread_spider(k, potential_telegram_sources):
-    db_session = db_manager.Session()
-    tg_accounts = db_session.query(db_manager.Base.classes.tg_accounts).all()
-    tg_account = tg_accounts[k]
-    tg_client = TelegramClient(str(os.getenv('DATA_DIRECTORY')) + '/' + tg_account.session_name, tg_account.api_id,
-                               tg_account.api_hash)
-    await tg_client.connect()
-    if not await tg_client.is_user_authorized():
-        await tg_client.send_code_request(tg_account.phone)
-        try:
-            await tg_client.sign_in(tg_account.phone, input('Enter the code: '))
-        except SessionPasswordNeededError as err:
-            await tg_client.sign_in(password=tg_account.password)
-    i = k * config['SETTINGS']['tg_limit']
-    while i < (k + 1) * config['SETTINGS']['tg_limit']:
-        await processing_telegram_source(potential_telegram_sources[i].link, potential_telegram_sources[i].parent_id,
-                                         potential_telegram_sources[i].date_formation_edge,
-                                         db_session, tg_client, k, i)
-        db_session.query(db_manager.Base.classes.potential_telegram_sources).filter(
-            db_manager.Base.classes.potential_telegram_sources.id ==
-            potential_telegram_sources[i].id).first().is_processing = True
-        db_session.commit()
-        i = i + 1
-    db_session.close()
+    try:
+        db_session = db_manager.Session()
+        tg_accounts = db_session.query(db_manager.Base.classes.tg_accounts).all()
+        tg_account = tg_accounts[k]
+        tg_client = TelegramClient(str(os.getenv('DATA_DIRECTORY')) + '/' + tg_account.session_name, tg_account.api_id,
+                                   tg_account.api_hash)
+        await tg_client.connect()
+        if not await tg_client.is_user_authorized():
+            await tg_client.send_code_request(tg_account.phone)
+            try:
+                await tg_client.sign_in(tg_account.phone, input('Enter the code: '))
+            except SessionPasswordNeededError as err:
+                await tg_client.sign_in(password=tg_account.password)
+        i = k * config['SETTINGS']['tg_limit']
+        while i < (k + 1) * config['SETTINGS']['tg_limit']:
+            await processing_telegram_source(potential_telegram_sources[i].link, potential_telegram_sources[i].parent_id,
+                                             potential_telegram_sources[i].date_formation_edge,
+                                             db_session, tg_client, k, i)
+            db_session.query(db_manager.Base.classes.potential_telegram_sources).filter(
+                db_manager.Base.classes.potential_telegram_sources.id ==
+                potential_telegram_sources[i].id).first().is_processing = True
+            db_session.commit()
+            i = i + 1
+        db_session.close()
+    except Exception as e:
+        logger.info(e)
 
 
 def main():
