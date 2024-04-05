@@ -1,0 +1,48 @@
+version: '3.7'
+
+volumes:
+  postgres-data: {}
+
+services:
+  spider-init:
+    build:
+      context: ./spider
+    environment:
+      DATA_DIRECTORY: /var/lib/spider
+      CONFIG_DIRECTORY: /etc/spider
+    volumes:
+    - ./spider-data:/var/lib/spider
+    - ./spider-config:/etc/spider
+    depends_on:
+    - postgres
+    entrypoint:
+    - "/usr/local/bin/python"
+    - "/app/init.py"
+
+  spider:
+    build:
+      context: ./spider
+    restart: always
+    container_name: tg-spider
+    environment:
+      DATA_DIRECTORY: /var/lib/spider
+      CONFIG_DIRECTORY: /etc/spider
+    volumes:
+    - ./spider-data:/var/lib/spider
+    - ./spider-config:/etc/spider
+    depends_on:
+    - postgres
+
+  postgres:
+    image: postgres:12.18-bullseye
+    restart: always
+    container_name: tg-spider-postgres
+    volumes:
+    - postgres-data:/var/lib/postgresql/data
+    - ./postgres:/docker-entrypoint-initdb.d
+    ports:
+    - "5433:5432"
+    environment:
+      POSTGRES_USER: vim_admin
+      POSTGRES_PASSWORD: vim
+      POSTGRES_DB: telegram
