@@ -6,6 +6,7 @@ import os
 import pytz
 from openai import OpenAI
 import tiktoken
+import time
 
 utc = pytz.UTC
 db_manager = DBManager()
@@ -101,6 +102,7 @@ def main():
         ts.date_description = utc.localize(datetime.datetime.now())
         ts.description = completion.choices[0].message.content
         db_session.commit()
+        time.sleep(30)
 
     db_session.close()
 
