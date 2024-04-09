@@ -11,6 +11,7 @@ SETTINGS:
   tg_limit: 2
   messages_limit: 200000
   messages_date_start: '2024-03-01'
+  openai_key : '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'
 LOGGING:
   logs_bot_token: '6733863104:AAE1QxUXUPmTACQfNlY8HdLcLOT4iMxvy3U'
   logs_group_id: -1002093059669
