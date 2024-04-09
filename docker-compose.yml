@@ -4,6 +4,21 @@ volumes:
   postgres-data: {}
 
 services:
+  spider-summary:
+    build:
+      context: ./spider
+    environment:
+      DATA_DIRECTORY: /var/lib/spider
+      CONFIG_DIRECTORY: /etc/spider
+    volumes:
+    - ./spider-data:/var/lib/spider
+    - ./spider-config:/etc/spider
+    depends_on:
+    - postgres
+    entrypoint:
+    - "/usr/local/bin/python"
+    - "/app/create_summary.py"
+
   spider-init:
     build:
       context: ./spider
