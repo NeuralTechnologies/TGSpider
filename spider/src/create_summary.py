@@ -66,45 +66,58 @@ def clean_text(text):
     cleaned_text = re.sub(r'\s+', ' ', cleaned_text).strip()
     return cleaned_text
 
-
 def main():
     db_session = db_manager.Session()
 
-    telegram_source = db_session.query(db_manager.Base.classes.telegram_sources).filter(
-        db_manager.Base.classes.telegram_sources.description == None).all()
+    telegram_source = db_session.query(db_manager.Base.classes.telegram_sources).filter(db_manager.Base.classes.telegram_sources.description ==  None).all()
     for ts in telegram_source:
-        all_messages = ''
-        ai_messages = [
+        try:
+            all_messages = ''
+            ai_messages = [
             {"role": "system", "content": "Make a brief description of the channel telegrams based on these messages"},
             {"role": "user", "content": all_messages}
-        ]
-        messages = db_session.query(db_manager.Base.classes.messages).filter(
-            db_manager.Base.classes.messages.telegram_sources_id == ts.id).filter(
-            db_manager.Base.classes.messages.message != None).filter(
-            db_manager.Base.classes.messages.message != '').order_by(
-            db_manager.Base.classes.messages.date.desc()).all()
-        for m in messages:
-            if num_tokens_from_messages(ai_messages) < 15000:
-                all_messages += clean_text(m.message)
-                ai_messages = [
-                    {"role": "system",
-                     "content": "Make a brief description of the channel telegrams based on these messages"},
-                    {"role": "user", "content": all_messages}
                 ]
+
+            messages = db_session.query(db_manager.Base.classes.messages).filter(
+                db_manager.Base.classes.messages.telegram_sources_id == ts.id).filter(
+                db_manager.Base.classes.messages.message != None).filter(
+                db_manager.Base.classes.messages.message != '').order_by(
+                db_manager.Base.classes.messages.date.desc()).all()
+            if len(messages) > 0:
+                for m in messages:
+                    if num_tokens_from_messages(ai_messages) < 15000:
+                        all_messages += clean_text(m.message)
+                        ai_messages = [
+                                    {"role": "system",
+                                     "content": "Make a brief description of the channel telegrams based on these messages"},
+                                    {"role": "user", "content": all_messages}
+                                    ]
+                    else:
+                        break
+                completion = client.chat.completions.create(
+                                    model="gpt-3.5-turbo",
+                                    #max_tokens=20,
+                                    messages= ai_messages)
+                logger.info(ts.link)
+                logger.info(completion.choices[0].message.content)
+                ts.description = completion.choices[0].message.content
             else:
-                break
-        completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            # max_tokens=20,
-            messages=ai_messages)
-        logger.info(ts.link)
-        logger.info(completion.choices[0].message.content)
-        ts.date_description = utc.localize(datetime.datetime.now())
-        ts.description = completion.choices[0].message.content
-        db_session.commit()
-        time.sleep(30)
+                logger.info(ts.link)
+                logger.info('There are not enough messages to build a description')
+                ts.description = 'There are not enough messages to build a description'
+
+        except Exception as e:
+            logger.info(ts.link)
+            ts.description = 'error'
+            logger.info(e)
+        finally:
+            ts.date_description  = utc.localize(datetime.datetime.now())
+            db_session.commit()
+
 
     db_session.close()
+
+
 
 
 if __name__ == '__main__':
