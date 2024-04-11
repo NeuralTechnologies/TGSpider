@@ -69,7 +69,7 @@ def clean_text(text):
 def main():
     db_session = db_manager.Session()
 
-    telegram_source = db_session.query(db_manager.Base.classes.telegram_sources).filter(db_manager.Base.classes.telegram_sources.description ==  None).all()
+    telegram_source = db_session.query(db_manager.Base.classes.telegram_sources).filter(db_manager.Base.classes.telegram_sources.description ==  None).filter(db_manager.Base.classes.telegram_sources.childs_count !=  None).all()
     for ts in telegram_source:
         try:
             all_messages = ''
