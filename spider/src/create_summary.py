@@ -85,7 +85,7 @@ def main():
                 db_manager.Base.classes.messages.date.desc()).all()
             if len(messages) > 0:
                 for m in messages:
-                    if num_tokens_from_messages(ai_messages) < 15000:
+                    if num_tokens_from_messages(ai_messages) < config['SETTINGS']['tokens']:
                         all_messages += clean_text(m.message)
                         ai_messages = [
                                     {"role": "system",
