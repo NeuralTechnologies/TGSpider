@@ -78,7 +78,7 @@ def main():
     for ts in telegram_source:
         try:
             ai_messages = [
-            {"role": "system", "content": "The provided text is a description of the channel's telegrams. Determine whether it relates to crypto topics. The answer must contain only one word 'yes' or 'no'"},
+            {"role": "system", "content": "Based on the proposed description of the channel’s telegrams, determine whether this channel is related to one of the topics: cryptocurrencies, blockchain, finance, investing, dex, crypto exchanges, protocols. If the channel is related to at least one of the topics, answer with one word yes, if no, then answer with one word no. The answer must be one word."},
             {"role": "user", "content": ts.description}
                 ]
             completion = client.chat.completions.create(
@@ -104,4 +104,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-                                                                                                                                                                                                                                                            104,10        Bot
