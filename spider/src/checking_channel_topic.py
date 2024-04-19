@@ -74,27 +74,31 @@ def main():
     telegram_source = db_session.query(db_manager.Base.classes.telegram_sources).filter(db_manager.Base.classes.telegram_sources.description !=  None).filter(db_manager.Base.classes.telegram_sources.childs_count !=  None).filter(
             db_manager.Base.classes.telegram_sources.description !=  'There are not enough messages to build a description').filter(
                     db_manager.Base.classes.telegram_sources.description != 'error').filter(
-                            db_manager.Base.classes.telegram_sources.is_crypto == None).all()
+                            db_manager.Base.classes.telegram_sources.is_crypto_new == None).all()
     for ts in telegram_source:
         try:
             ai_messages = [
-            {"role": "system", "content": "Based on the proposed description of the channel’s telegrams, determine whether this channel is related to one of the topics: cryptocurrencies, blockchain, finance, investing, dex, crypto exchanges, protocols. If the channel is related to at least one of the topics, answer with one word yes, if no, then answer with one word no. The answer must be one word."},
+            {"role": "system", "content": "Based on the proposed description of the channel’s telegrams, determine whether this channel is related to one of the topics: cryptocurrencies, blockchain, finance, investing, dex, crypto exchanges, protocols. If the channel is related to at least one of the topics, answer with one number 1, if no, then answer with one number 2 . if there is not enough information to determine, answer one number 0. The answer must be only one number from the set [0,1,2]"},
             {"role": "user", "content": ts.description}
                 ]
             completion = client.chat.completions.create(
                                     model="gpt-3.5-turbo",
                                     #max_tokens=20,
                                     messages= ai_messages)
-            logger.info(ts.link)
-            logger.info(completion.choices[0].message.content)
-            if 'yes' in completion.choices[0].message.content.lower():
-                ts.is_crypto = True
+            print(ts.link)
+            print(ts.description)
+            print(ts.is_crypto)
+            print(completion.choices[0].message.content)
+            if '1' in completion.choices[0].message.content.lower():
+                ts.is_crypto_new = 1
+            elif '2' in completion.choices[0].message.content.lower():
+                ts.is_crypto_new = 2
             else:
-                ts.is_crypto =False
+                ts.is_crypto_new = 0
 
         except Exception as e:
-            logger.info(ts.link)
-            logger.info(e)
+            print(ts.link)
+            print(e)
         finally:
             #ts.date_description  = utc.localize(datetime.datetime.now())
             db_session.commit()
